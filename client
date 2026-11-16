@@ -1,0 +1,77 @@
+import java.io.*;
+import java.net.*;
+public class EchoServer {
+    public static void main(String[] args) throws IOException {
+
+        ServerSocket server = new ServerSocket(5000);
+
+        System.out.println("Echo Server started, waiting for client...");
+
+        Socket socket = server.accept();
+
+        System.out.println("Client connected: " + socket.getInetAddress());
+
+        BufferedReader in = new BufferedReader(
+            new InputStreamReader(socket.getInputStream()));
+
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+        String line;
+
+        while ((line = in.readLine()) != null) {
+
+            System.out.println("Client: " + line);
+
+            out.println("Echo: " + line);
+
+            if (line.equalsIgnoreCase("exit"))
+                break;
+        }
+
+        in.close();
+        out.close();
+        socket.close();
+        server.close();
+    }
+}
+
+public class EchoClient {
+    public static void main(String[] args) throws IOException {
+
+        // Optional argument: server IP (defaults to localhost)
+        String host = (args.length > 0) ? args[0] : "localhost";
+
+        Socket socket = new Socket(host, 5000);
+
+        BufferedReader keyboard = new BufferedReader(
+            new InputStreamReader(System.in));
+
+        BufferedReader in = new BufferedReader(
+            new InputStreamReader(socket.getInputStream()));
+
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+        String msg;
+
+        while (true) {
+
+            System.out.print("Enter message: ");
+
+            msg = keyboard.readLine();
+
+            if (msg == null)
+                break;
+
+            out.println(msg);
+
+            System.out.println("Server: " + in.readLine());
+
+            if (msg.equalsIgnoreCase("exit"))
+                break;
+        }
+
+        in.close();
+        out.close();
+        socket.close();
+    }
+}
